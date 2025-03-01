@@ -11,20 +11,28 @@ const GraphVisualizer = () => {
 
   const parseData = () => {
     const lines = data.trim().split("\n");
-    const nodes = new Set();
+    const leftNodes = new Set();
+    const rightNodes = new Set();
     const edges = [];
 
     lines.forEach((line) => {
       const [source, target] = line.split(",").map((item) => item.trim());
       if (source && target) {
-        nodes.add(source);
-        nodes.add(target);
+        leftNodes.add(source);
+        rightNodes.add(target);
         edges.push({ data: { id: `${source}-${target}`, source, target } });
       }
     });
 
     setElements([
-      ...Array.from(nodes).map((node) => ({ data: { id: node, label: node } })),
+      ...Array.from(leftNodes).map((node) => ({
+        data: { id: node, label: node },
+        classes: "left-node"
+      })),
+      ...Array.from(rightNodes).map((node) => ({
+        data: { id: node, label: node },
+        classes: "right-node"
+      })),
       ...edges,
     ]);
   };
@@ -45,13 +53,23 @@ const GraphVisualizer = () => {
       <CytoscapeComponent
         elements={elements}
         style={{ width: "100%", height: "500px", marginTop: "10px" }}
-        layout={{ name: "cose" }}
+        layout={{ name: "cose", nodeRepulsion: 10000, idealEdgeLength: 100 }}
         stylesheet={[
           {
-            selector: "node",
+            selector: ".left-node",
             style: {
               label: "data(label)",
-              "background-color": "#3498db",
+              "background-color": "#ff5733",
+              color: "white",
+              "text-valign": "center",
+              "text-halign": "center",
+            },
+          },
+          {
+            selector: ".right-node",
+            style: {
+              label: "data(label)",
+              "background-color": "#33ff57",
               color: "white",
               "text-valign": "center",
               "text-halign": "center",
